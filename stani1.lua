@@ -77884,6 +77884,12 @@ function GameTab.initDebuggingSection(groupbox)
 	})
 end
 
+local Players = game:GetService("Players")
+local function getAllPlayersTable()
+    local playerList = Players:GetPlayers()
+    return playerList
+end
+
 ---Info spoofing section.
 ---@param groupbox table
 function GameTab.initInfoSpoofingSection(groupbox)
@@ -77897,6 +77903,14 @@ function GameTab.initInfoSpoofingSection(groupbox)
 			hasEverBeenEnabled = true
 		end,
 	})
+    groupbox:AddDropdown("ActionRollingActions", {
+		Text = "Action Rolling Actions",
+		Values = getAllPlayersTable(),
+		Multi = true,
+		AllowNull = true,
+		Default = {},
+	})
+    
 
 	groupbox:AddToggle("InfoSpoofing", {
 		Text = "Enable Info Spoofing",
