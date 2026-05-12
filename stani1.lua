@@ -77885,9 +77885,14 @@ function GameTab.initDebuggingSection(groupbox)
 end
 
 local Players = game:GetService("Players")
-local function getAllPlayersTable()
-    local playerList = Players:GetPlayers()
-    return playerList
+local function getPlayerNamesTable()
+    local nameList = {}
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= Players.LocalPlayer then
+            table.insert(nameList, player.Name)
+        end
+    end
+    return nameList
 end
 
 ---Info spoofing section.
@@ -77903,15 +77908,20 @@ function GameTab.initInfoSpoofingSection(groupbox)
 			hasEverBeenEnabled = true
 		end,
 	})
-    groupbox:AddDropdown("otherspoofgb", {
-		Text = "Fling Spoof Player List",
-		Values = getAllPlayersTable(),
-		Multi = true,
-		AllowNull = true,
-		Default = {},
-	})
+    local PlayerDropdown = groupbox:AddDropdown("otherspoofgb", {
+        Text = "Fling Spoof Player List",
+        Values = getPlayerNamesTable(),
+        Multi = true,
+        AllowNull = true,
+        Default = {},
+    })
     
+    local function RefreshDropdown()
+        PlayerDropdown:SetValues(getPlayerNamesTable())
+    end
 
+    Players.PlayerAdded:Connect(RefreshDropdown)
+    Players.PlayerRemoving:Connect(RefreshDropdown)
 	groupbox:AddToggle("InfoSpoofing", {
 		Text = "Enable Info Spoofing",
 		Default = false,
