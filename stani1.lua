@@ -77903,8 +77903,8 @@ function GameTab.initInfoSpoofingSection(groupbox)
 			hasEverBeenEnabled = true
 		end,
 	})
-    groupbox:AddDropdown("ActionRollingActions", {
-		Text = "Action Rolling Actions",
+    groupbox:AddDropdown("otherspoofgb", {
+		Text = "Fling Spoof Player List",
 		Values = getAllPlayersTable(),
 		Multi = true,
 		AllowNull = true,
