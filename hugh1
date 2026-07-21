@@ -1,0 +1,100 @@
+local a = game:GetService("RunService")
+local b = game:GetService("Players")
+local c = workspace:FindFirstChild("TrinketsContainer")
+if not c then
+    c = Instance.new("Model")
+    c.Name = "TrinketsContainer"
+    c.Parent = workspace
+end
+local d = c:FindFirstChild("GlobalTrinketHighlight")
+if not d then
+    d = Instance.new("Highlight")
+    d.Name = "GlobalTrinketHighlight"
+    d.FillColor = Color3.fromRGB(255, 215, 0)
+    d.OutlineColor = Color3.fromRGB(255, 255, 255)
+    d.FillTransparency = 0.5
+    d.OutlineTransparency = 0
+    d.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    d.Adornee = c
+    d.Parent = c
+end
+local function e(f)
+    if f:FindFirstChild("ItemBillboard") then
+        return
+    end
+    local g = Instance.new("BillboardGui")
+    g.Name = "ItemBillboard"
+    g.Size = UDim2.new(0, 140, 0, 40)
+    g.StudsOffset = Vector3.new(0, 2.5, 0)
+    g.AlwaysOnTop = true
+    local h = Instance.new("TextLabel")
+    h.Name = "DistanceLabel"
+    h.Size = UDim2.new(1, 0, 1, 0)
+    h.BackgroundTransparency = 1
+    h.Text = "Item (... studs)"
+    h.TextColor3 = Color3.fromRGB(255, 255, 255)
+    h.TextScaled = true
+    h.Font = Enum.Font.SourceSansBold
+    local i = Instance.new("UIStroke")
+    i.Thickness = 1.5
+    i.Color = Color3.fromRGB(0, 0, 0)
+    i.Parent = h
+    h.Parent = g
+    g.Parent = f
+end
+local function j(k)
+    if not k or k:IsDescendantOf(c) then
+        return
+    end
+    local l = k.ClassName == "MeshPart" or k.ClassName == "Part"
+    if l and k.Name == "Part" then
+        local m = k:FindFirstChild("ID")
+        if m and m:IsA("StringValue") then
+            e(k)
+            k.Parent = c
+        end
+    end
+end
+for n, o in workspace:GetDescendants() do
+    if o:IsA("StringValue") and o.Name == "ID" then
+        j(o.Parent)
+    end
+end
+workspace.DescendantAdded:Connect(
+    function(o)
+        if o:IsA("StringValue") and o.Name == "ID" then
+            task.defer(
+                function()
+                    j(o.Parent)
+                end
+            )
+        elseif (o.ClassName == "MeshPart" or o.ClassName == "Part") and o.Name == "Part" then
+            task.defer(
+                function()
+                    j(o)
+                end
+            )
+        end
+    end
+)
+a.Heartbeat:Connect(
+    function()
+        local p = b.LocalPlayer
+        local q = p and p.Character
+        local r = q and q:FindFirstChild("HumanoidRootPart")
+        for n, s in c:GetChildren() do
+            if s:IsA("BasePart") then
+                local g = s:FindFirstChild("ItemBillboard")
+                local h = g and g:FindFirstChild("DistanceLabel")
+                if h then
+                    if r then
+                        local t = math.floor((r.Position - s.Position).Magnitude)
+                        h.Text = string.format("Item (%d studs)", t)
+                    else
+                        h.Text = "Item (... studs)"
+                    end
+                end
+            end
+        end
+    end
+)
